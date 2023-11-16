@@ -33,6 +33,34 @@ st.bar_chart(sources_df, y="Count")
 
 
 cursor = database.aql.execute(
+    'FOR i IN uploaded_products RETURN i.source',
+)
+
+uploaded_products = []
+
+sources = {}
+
+if cursor is not None:
+    for source in cursor:
+        uploaded_products.append(source)
+
+        if source in sources:
+            sources[source] += 1
+        else:
+            sources[source] = 1
+
+
+st.write(f"# Total uploaded products: {len(uploaded_products)}")
+
+st.write("## Sources")
+
+sources_df = pd.DataFrame(sources.items(), columns=["Source", "Count"])
+sources_df.set_index("Source", inplace=True)
+
+st.bar_chart(sources_df, y="Count")
+
+
+cursor = database.aql.execute(
     'FOR i IN url_queues RETURN i.source',
 )
 
