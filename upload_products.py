@@ -4,6 +4,32 @@ from dotenv import load_dotenv
 from os import getenv
 from firebase_admin import credentials, initialize_app
 from firebase_admin.firestore import client, firestore
+import concurrent.futures
+
+
+def upload_product(index: int, product: dict) -> None:
+    name = product["name"]
+    productID = product["product_id"]
+
+    _key = product["_key"]
+
+    del product["_key"]
+
+    names.append(name)
+
+    print(f"[+] {index}) Uploading {name}")
+
+    algolia_index.save_object(
+        {**product, "objectID": productID}).wait()
+
+    firestore_client.collection(
+        "products").document(productID).set(product)
+
+    uploaded_products_collection.insert(product)
+
+    indexed_products_collection.delete(_key)
+
+    print(f"[+] {index}) Uploaded {name}")
 
 
 load_dotenv()
@@ -44,29 +70,8 @@ names = []
 
 
 if cursor is not None:
-    for index, product in enumerate(cursor):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
 
-        name = product["name"]
-        productID = product["product_id"]
+        for index, product in enumerate(cursor):
 
-        _key = product["_key"]
-
-        del product["_key"]
-
-        names.append(name)
-
-        print(f"[+] {index}) Uploading name {name}")
-
-        algolia_index.save_object(
-            {**product, "objectID": productID}).wait()
-
-        firestore_client.collection(
-            "products").document(productID).set(product)
-
-        uploaded_products_collection.insert(product)
-
-        indexed_products_collection.delete(_key)
-
-
-firestore_client.collection(
-    "names_index").document("names_index").update({"names": firestore.ArrayUnion(names)})
+            executor.submit(upload_product, index, product)
