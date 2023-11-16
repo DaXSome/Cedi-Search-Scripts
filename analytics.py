@@ -1,16 +1,8 @@
-from dotenv import load_dotenv
-from arango.client import ArangoClient
-from os import getenv
+
 import streamlit as st
 import pandas as pd
+from database import database
 
-
-load_dotenv()
-
-client = ArangoClient(hosts=str(getenv("DB_CONNECTION_STRING")))
-
-database = client.db("cedi_search", username=str(getenv(
-    "DB_USERNAME")), password=str(getenv("DB_PASSWORD")))
 
 cursor = database.aql.execute(
     'FOR i IN indexed_products RETURN i.source',
