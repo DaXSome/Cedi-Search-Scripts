@@ -70,7 +70,7 @@ names = []
 
 
 if cursor is not None:
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
 
         for index, product in enumerate(cursor):
 
