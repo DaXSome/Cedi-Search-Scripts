@@ -1,3 +1,4 @@
+from json import dumps
 from database import database
 from algoliasearch.search_client import SearchClient
 from dotenv import load_dotenv
@@ -69,8 +70,6 @@ cursor = database.aql.execute(
     """,
 )
 
-names = []
-
 
 if cursor is not None:
     with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
@@ -78,3 +77,14 @@ if cursor is not None:
         for index, product in enumerate(cursor):
 
             executor.submit(upload_product, index, product)
+
+
+cursor = database.aql.execute(
+    """
+        FOR d IN uploaded_products
+        RETURN d.name
+    """,
+)
+
+with open("index.json", "w") as index_file:
+    index_file.write(dumps(list(cursor)))
