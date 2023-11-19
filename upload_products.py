@@ -15,21 +15,24 @@ def upload_product(index: int, product: dict) -> None:
 
     del product["_key"]
 
-    names.append(name)
-
     print(f"[+] {index}) Uploading {name}")
 
-    algolia_index.save_object(
-        {**product, "objectID": productID}).wait()
+    try:
 
-    firestore_client.collection(
-        "products").document(productID).set(product)
+        algolia_index.save_object(
+            {**product, "objectID": productID}).wait()
 
-    uploaded_products_collection.insert(product)
+        firestore_client.collection(
+            "products").document(productID).set(product)
 
-    indexed_products_collection.delete(_key)
+        uploaded_products_collection.insert(product)
 
-    print(f"[+] {index}) Uploaded {name}")
+        indexed_products_collection.delete(_key)
+
+        print(f"[+] {index}) Uploaded {name}")
+
+    except Exception as e:
+        print(f"[!] {index} Couldn't upload {name} because {e}")
 
 
 load_dotenv()
