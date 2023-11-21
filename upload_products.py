@@ -26,7 +26,10 @@ def upload_product(index: int, product: dict) -> None:
     try:
 
         algolia_index.save_object(
-            {**product, "objectID": productID}).wait()
+            {**product,
+             "objectID": productID,
+             "description": product["description"][:5000]
+             }).wait()
 
         firestore_client.collection(
             "products").document(productID).set(product)
