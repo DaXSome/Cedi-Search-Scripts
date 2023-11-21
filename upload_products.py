@@ -1,16 +1,21 @@
 from json import dumps
+import uuid
 from database import database
 from algoliasearch.search_client import SearchClient
 from dotenv import load_dotenv
 from os import getenv
 from firebase_admin import credentials, initialize_app
 from firebase_admin.firestore import client, firestore
+from uuid import uuid4
 import concurrent.futures
 
 
 def upload_product(index: int, product: dict) -> None:
     name = product["name"]
     productID = product["product_id"]
+
+    if productID == "":
+        productID = str(uuid4())
 
     _key = product["_key"]
 
