@@ -1,7 +1,7 @@
 
 import streamlit as st
 import pandas as pd
-from database import database
+from utils import database
 
 
 cursor = database.aql.execute(

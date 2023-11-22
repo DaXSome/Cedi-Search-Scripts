@@ -1,11 +1,5 @@
 from json import dumps
-import uuid
-from database import database
-from algoliasearch.search_client import SearchClient
-from dotenv import load_dotenv
-from os import getenv
-from firebase_admin import credentials, initialize_app
-from firebase_admin.firestore import client, firestore
+from utils import database, algolia_index, firestore_client
 from uuid import uuid4
 import concurrent.futures
 
@@ -43,19 +37,6 @@ def upload_product(index: int, product: dict) -> None:
     except Exception as e:
         print(f"[!] {index} Couldn't upload {name} because {e}")
 
-
-load_dotenv()
-
-cred = credentials.Certificate("serviceAccount.json")
-
-initialize_app(cred)
-
-firestore_client = client()
-
-algolia_client = SearchClient.create(
-    getenv("ALGOLIA_APP_ID"), getenv("ALGOLIA_API_KEY"))
-
-algolia_index = algolia_client.init_index("products")
 
 uploaded_products_collection = database.collection(name="uploaded_products")
 indexed_products_collection = database.collection(name="indexed_products")
