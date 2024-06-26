@@ -2,24 +2,23 @@ import streamlit as st
 import pandas as pd
 from utils import database
 
+url_sources = ["Jumia", "Jiji", "Oraimo", "Deus", "Ishtari"]
+
 indexed_products_cursor = database["indexed_products"].find()
 
-indexed_products = []
+indexed_products = 0
 
 sources = {}
 
-for item in indexed_products_cursor:
-    indexed_products.append(item)
+for source in url_sources:
+    total = database["indexed_products"].count_documents({
+        "source": source})
 
-    source = item.get("source")
+    sources[source] = total
 
-    if source in sources:
-        sources[source] += 1
-    else:
-        sources[source] = 1
+    indexed_products += total
 
-
-st.write(f"# Total indexed products: {len(indexed_products)}")
+st.write(f"# Total indexed products: {indexed_products}")
 
 st.write("## Sources")
 
@@ -30,22 +29,19 @@ st.bar_chart(sources_df, y="Count")
 
 url_queues_cursor = database["url_queues"].find()
 
-url_queues = []
+url_queues = 0
 
 sources = {}
 
-for items in url_queues_cursor:
-    url_queues.append(item)
+for source in url_sources:
+    total = database["url_queues"].count_documents({
+        "source": source})
 
-    source = item.get("source")
+    sources[source] = total
 
-    if source in sources:
-        sources[source] += 1
-    else:
-        sources[source] = 1
+    url_queues += total
 
-
-st.write(f"# Total url queues: {len(url_queues)}")
+st.write(f"# Total url queues: {url_queues}")
 
 st.write("## Sources")
 
