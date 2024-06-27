@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 from utils import database
+from streamlit_autorefresh import st_autorefresh
+
+st_autorefresh(interval=1000*60)
+
 
 url_sources = ["Jumia", "Jiji", "Oraimo", "Deus", "Ishtari"]
 
